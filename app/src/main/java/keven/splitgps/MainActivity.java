@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActionBar;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,7 +21,16 @@ public class MainActivity extends AppCompatActivity {
     private static TextView[] splitnames = new TextView[16];
     private static TextView[] splitdiffs = new TextView[16];
     private static TextView[] splittimes = new TextView[16];
-    private static TextView split_total, split_time, split_pb, split_besttime, split_previous, split_pts, split_bpt, split_sob, title;
+    private static TextView split_total, split_time, split_pb, split_besttime, split_previous,
+            split_pts, split_bpt, split_sob, title;
+    private static long initialTime;
+    private static Handler handler;
+    private static final long MILLIS_IN_SEC = 1000L;
+    private static final int SECS_IN_MIN = 60;
+    private static final int MIN_HOUR = 60;
+    private static Button bt_split;
+    private static int state = -1;
+    private static long total_time;
 
 
     private void init_static_vars(){
@@ -59,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 last_split.addView(splitnames[i]);
 
             splitdiffs[i] = new TextView(this);
-            splitdiffs[i].setText(diffs[i]);
+            splitdiffs[i].setText("");
             splitdiffs[i].setWidth(200);
             splitdiffs[i].setTextSize(20);
             if (i != splits.length -1)
@@ -89,6 +100,51 @@ public class MainActivity extends AppCompatActivity {
         init_static_vars();
         init_splits();
 
-
+        bt_split = (Button) findViewById(R.id.bt_split);
+        bt_split.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                state++;
+                if (state == 0) {
+                    initialTime = System.currentTimeMillis();
+                    handler.postDelayed(runnable, 20);
+                }
+            }
+        });
+        handler = new Handler();
     }
+
+    private static String long_to_string(long time){
+        String string_time;
+        long hour = time / (MIN_HOUR*SECS_IN_MIN);
+        long minute = (time / MIN_HOUR) % SECS_IN_MIN;
+        long second = (time % MIN_HOUR) % SECS_IN_MIN;
+        if (minute >= 1 || hour >=1){
+            if (hour >= 1){
+                string_time = String.format("%d:%02d:%02d", hour,minute,second);
+            }
+            else{
+                string_time = String.format("%d:%02d", minute,second);
+            }
+        }
+        else{
+            string_time = String.format("%d",second);
+        }
+        return string_time;
+    }
+
+    private final static Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            switch (state){
+                case 0:
+                    total_time = (System.currentTimeMillis() - initialTime)/20;
+                    split_total.setText(long_to_string(total_time));
+                    break;
+
+                default:
+                    break;
+            }
+            handler.postDelayed(runnable, 20);
+        }
+    };
 }
