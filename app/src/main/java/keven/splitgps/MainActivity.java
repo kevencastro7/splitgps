@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity {
 
     private static LinearLayout splitlayout_vertical;
@@ -17,6 +19,22 @@ public class MainActivity extends AppCompatActivity {
     private static TextView[] splitnames = new TextView[16];
     private static TextView[] splitdiffs = new TextView[16];
     private static TextView[] splittimes = new TextView[16];
+    private static TextView split_total, split_time, split_pb, split_besttime, split_previous, split_pts, split_bpt, split_sob, title;
+
+
+    private void init_static_vars(){
+        splitlayout_vertical =  (LinearLayout)findViewById(R.id.splitlayout);
+        last_split =  (LinearLayout)findViewById(R.id.last_split);
+        split_total = (TextView)findViewById(R.id.split_total);
+        split_time = (TextView)findViewById(R.id.split_time);
+        split_pb = (TextView)findViewById(R.id.split_pb);
+        split_besttime = (TextView)findViewById(R.id.split_previous);
+        split_previous = (TextView)findViewById(R.id.split_previous);
+        split_pts = (TextView)findViewById(R.id.split_pts);
+        split_bpt = (TextView)findViewById(R.id.split_bpt);
+        split_sob = (TextView)findViewById(R.id.split_sob);
+        title = (TextView)findViewById(R.id.title);
+    }
 
     private void init_splits(){
         String[] names = {"Cap","Cascade","Sand","Lake","Wooded","Cloud","Lost","Mecha Wiggler","Metro",
@@ -25,8 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 "-27:05","-27:04","-27:09","-28:05","-29:06","-26:01","-30:07"};
         String[] times = {"2:22","5:15","10:19","13:16","18:39","20:10","22:18","25:47","30:19",
                 "35:01","38:32","44:48","47:58","52:22","55:51","1:01:07"};
-        splitlayout_vertical =  (LinearLayout)findViewById(R.id.splitlayout);
-        last_split =  (LinearLayout)findViewById(R.id.last_split);
+
 
 
         for(int i = 0; i < splits.length; i++){
@@ -69,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        init_static_vars();
         init_splits();
 
 
