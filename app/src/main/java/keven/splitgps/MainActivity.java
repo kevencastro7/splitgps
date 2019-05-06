@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static JSONArray pb_time_json, best_time_json, segment_time_json;
 
-    private void init_static_vars(){
+    private void init_static_vars() throws JSONException {
         splitlayout_vertical =  (LinearLayout)findViewById(R.id.splitlayout);
         last_split =  (LinearLayout)findViewById(R.id.last_split);
         split_total = (TextView)findViewById(R.id.split_total);
@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         segment_time_json = new JSONArray();
 
         for (int i = 0; i < 16; i++){
-            pb_time_json.put(pb_time[i]);
-            best_time_json.put(best_time[i]);
+            pb_time_json.put(i, pb_time[i]);
+            best_time_json.put(i, best_time[i]);
         }
     }
 
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         segment_time_json = new JSONArray();
         for(int i = 0; i < splits.length; i++){
             splitdiffs[i].setText("");
-            splittimes[i].setText(long_to_string(sum_until_i(pb_time, i)));
+            splittimes[i].setText(long_to_string(sum_until_i_json(pb_time_json, i)));
             splitdiffs[i].setTextColor(Color.rgb(0,0,0));
         }
 
@@ -79,15 +79,15 @@ public class MainActivity extends AppCompatActivity {
         split_time.setText(long_to_string(0));
         split_previous.setText("-");
         split_previous.setTextColor(Color.rgb(0,0,0));
-        split_pb.setText(long_to_string(pb_time[0]));
+        split_pb.setText(long_to_string(pb_time_json.getLong(0)));
         split_besttime.setText(long_to_string(best_time[0]));
-        split_pts.setText(long_to_string(pb_time[0]-best_time[0]));
+        split_pts.setText(long_to_string(pb_time_json.getLong(0)-best_time[0]));
         split_bpt.setText(long_to_string(sum_until_i(best_time,splits.length-1)));
         split_sob.setText(long_to_string(sum_until_i(best_time,splits.length-1)));
 
     }
 
-    private void init_splits(){
+    private void init_splits() throws JSONException {
         String[] names = {"Cap","Cascade","Sand","Lake","Wooded","Cloud","Lost","Mecha Wiggler","Metro",
                 "Snow", "Seaside", "Luncheon", "Ruined", "Bunnies", "Chinatown", "Escape"};
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 last_split.addView(splitdiffs[i]);
 
             splittimes[i] = new TextView(this);
-            splittimes[i].setText(long_to_string(sum_until_i(pb_time, i)));
+            splittimes[i].setText(long_to_string(sum_until_i_json(pb_time_json, i)));
             splittimes[i].setWidth(250);
             splittimes[i].setTextSize(20);
             splittimes[i].setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
@@ -126,9 +126,9 @@ public class MainActivity extends AppCompatActivity {
                 splitlayout_vertical.addView(splits[i]);
         }
 
-        split_pb.setText(long_to_string(pb_time[0]));
+        split_pb.setText(long_to_string(pb_time_json.getLong(0)));
         split_besttime.setText(long_to_string(best_time[0]));
-        split_pts.setText(long_to_string(pb_time[0]-best_time[0]));
+        split_pts.setText(long_to_string(pb_time_json.getLong(0)-best_time[0]));
         split_bpt.setText(long_to_string(sum_until_i(best_time,splits.length-1)));
         split_sob.setText(long_to_string(sum_until_i(best_time,splits.length-1)));
 
@@ -136,11 +136,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void save_splittime() throws JSONException {
         splittimes[state-1].setText(long_to_string(total_time));
-        split_pb.setText(long_to_string(pb_time[state]));
+        split_pb.setText(long_to_string(pb_time_json.getLong(state)));
         split_besttime.setText(long_to_string(best_time[state]));
-        split_pts.setText(long_to_string(pb_time[state]-best_time[state]));
+        split_pts.setText(long_to_string(pb_time_json.getLong(state)-best_time[state]));
         split_bpt.setText(long_to_string(sum_until_i_json(segment_time_json,state -1 ) + sum_past_i(best_time,state-1)));
-        splitdiffs[state-1].setText(diff_long_to_string(total_time ,sum_until_i(pb_time, state-1)));
+        splitdiffs[state-1].setText(diff_long_to_string(total_time ,sum_until_i_json(pb_time_json, state-1)));
         split_previous.setText(diff_long_to_string(segment_time_json.getLong(state-1) ,best_time[state-1]));
 
         if (segment_time_json.getLong(state-1) < best_time[state -1]){
@@ -148,9 +148,9 @@ public class MainActivity extends AppCompatActivity {
             best_time[state-1] = segment_time_json.getLong(state-1);
             splitdiffs[state-1].setTextColor(Color.rgb(255,215,0));
         }
-        else if (total_time < sum_until_i(pb_time, state-1) ){
+        else if (total_time < sum_until_i_json(pb_time_json, state-1) ){
             split_previous.setTextColor(Color.rgb(255,0,0));
-            if (segment_time_json.getLong(state-1) < pb_time[state-1]) {
+            if (segment_time_json.getLong(state-1) < pb_time_json.getLong(state-1)) {
                 splitdiffs[state - 1].setTextColor(Color.rgb(0, 255, 0));
             }
             else {
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             split_previous.setTextColor(Color.rgb(255,0,0));
-            if (segment_time_json.getLong(state-1) < pb_time[state-1]) {
+            if (segment_time_json.getLong(state-1) < pb_time_json.getLong(state-1)) {
                 splitdiffs[state - 1].setTextColor(Color.rgb(150, 0, 0));
             }
             else {
@@ -171,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void end_splittime() throws JSONException {
         splittimes[splits.length-1].setText(long_to_string(total_time));
-        split_pts.setText(long_to_string(pb_time[splits.length-1]-best_time[splits.length-1]));
+        split_pts.setText(long_to_string(pb_time_json.getLong(splits.length-1)-best_time[splits.length-1]));
         split_bpt.setText(long_to_string(sum_until_i_json(segment_time_json,splits.length-1 ) + sum_past_i(best_time,splits.length-1)));
-        splitdiffs[splits.length-1].setText(diff_long_to_string(total_time ,sum_until_i(pb_time, splits.length-1)));
+        splitdiffs[splits.length-1].setText(diff_long_to_string(total_time ,sum_until_i_json(pb_time_json, splits.length-1)));
         split_previous.setText(diff_long_to_string(segment_time_json.getLong(splits.length-1) ,best_time[splits.length-1]));
 
         if (segment_time_json.getLong(splits.length-1) < best_time[splits.length-1]){
@@ -181,9 +181,9 @@ public class MainActivity extends AppCompatActivity {
             best_time[splits.length-1] = segment_time_json.getLong(splits.length-1);
             splitdiffs[splits.length-1].setTextColor(Color.rgb(255,215,0));
         }
-        else if (total_time < sum_until_i(pb_time, splits.length-1) ){
+        else if (total_time < sum_until_i_json(pb_time_json, splits.length-1) ){
             split_previous.setTextColor(Color.rgb(255,0,0));
-            if (segment_time_json.getLong(splits.length-1) < pb_time[splits.length-1]) {
+            if (segment_time_json.getLong(splits.length-1) < pb_time_json.getLong(splits.length-1)) {
                 splitdiffs[splits.length-1].setTextColor(Color.rgb(0, 255, 0));
             }
             else {
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             split_previous.setTextColor(Color.rgb(255,0,0));
-            if (segment_time_json.getLong(splits.length-1) < pb_time[splits.length-1]) {
+            if (segment_time_json.getLong(splits.length-1) < pb_time_json.getLong(splits.length-1)) {
                 splitdiffs[splits.length-1].setTextColor(Color.rgb(150, 0, 0));
             }
             else {
@@ -201,9 +201,9 @@ public class MainActivity extends AppCompatActivity {
         }
         split_sob.setText(long_to_string(sum_until_i(best_time,splits.length-1)));
 
-        if (total_time < sum_until_i(pb_time, splits.length -1)){
+        if (total_time < sum_until_i_json(pb_time_json, splits.length -1)){
             for (int i = 0; i< splits.length;i++)
-                pb_time[i] = segment_time_json.getLong(i);
+                pb_time_json.put(i, segment_time_json.getLong(i));
             split_total.setTextColor(Color.rgb(255, 215, 0));
         }
         else
@@ -213,8 +213,16 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init_static_vars();
-        init_splits();
+        try {
+            init_static_vars();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            init_splits();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         bt_split = (Button) findViewById(R.id.bt_split);
         bt_split.setOnClickListener(new Button.OnClickListener() {
@@ -296,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
     public static int sum_until_i_json( JSONArray vector, int i) throws JSONException {
         int sum = 0;
         for (int j = 0; j <= i; j++){
-            sum += vector.getLong(i);
+            sum += vector.getLong(j);
         }
         return sum;
     }
@@ -322,9 +330,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 try {
-                    if (segment_time_json.getLong(state) >= pb_time[state] || segment_time_json.getLong(state) >= best_time[state] ||
-                            total_time >= sum_until_i(pb_time, state)){
-                        splitdiffs[state].setText(diff_long_to_string(total_time,sum_until_i(pb_time, state)));
+                    if (segment_time_json.getLong(state) >= pb_time_json.getLong(state) || segment_time_json.getLong(state) >= best_time[state] ||
+                            total_time >= sum_until_i_json(pb_time_json, state)){
+                        splitdiffs[state].setText(diff_long_to_string(total_time,sum_until_i_json(pb_time_json, state)));
                         split_bpt.setText(long_to_string(sum_until_i_json(segment_time_json,state ) + sum_past_i(best_time,state)));
                     }
                 } catch (JSONException e) {
