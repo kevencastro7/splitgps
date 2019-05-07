@@ -207,11 +207,15 @@ public class MainActivity extends AppCompatActivity {
 
         inicia_banco();
         try {
-            JSONArray updating = new JSONArray("[142,173,304,177,323,91,128,209,272,282,211,376,190,264,209,316]");
-            update_path_json(path_id, DataBase.Path.BEST,updating);
-            update_path_json(path_id, DataBase.Path.MEAN,updating);
-            update_path_json(path_id, DataBase.Path.PB,updating);
-            update_path_json(path_id, DataBase.Path.LAST,updating);
+            JSONArray pb = new JSONArray("[142,173,304,177,323,91,128,209,272,282,211,376,190,264,209,316]");
+            JSONArray best = new JSONArray("[132,163,278,167,308,90,118,183,262,267,210,366,164,254,194,301]");
+            JSONArray name = new JSONArray("[\"Cap\",\"Cascade\",\"Sand\",\"Lake\",\"Wooded\",\"Cloud\",\"Lost\",\"Mecha Wiggler\",\"Metro\", \"Snow\", \"Seaside\", \"Luncheon\", \"Ruined\", \"Bunnies\", \"Chinatown\", \"Escape\"]");
+
+            update_path_json(path_id, DataBase.Path.BEST,best);
+            update_path_json(path_id, DataBase.Path.MEAN,pb);
+            update_path_json(path_id, DataBase.Path.PB,pb);
+            update_path_json(path_id, DataBase.Path.LAST,pb);
+            update_path_json(path_id, DataBase.Path.SPLIT_NAMES,name);
             reset_splits();
 
         } catch (JSONException e) {
