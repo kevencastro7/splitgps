@@ -6,11 +6,19 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 public class MainActivity extends AppCompatActivity {
+
+    public static SQLiteDatabase db;
+    public static PostDbHelper mDbHelper;
+    public static int path_id = 1;
 
     public static final class DataBase {
 
@@ -22,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
             public static final String RUN_COUNT = "run_count";
             public static final String SPLIT_COUNT = "split_count";
             public static final String PB = "personal_best";
+            public static final String BEST = "best";
             public static final String MEAN = "mean";
             public static final String LAST = "last";
             public static final String SPLIT_NAMES = "split_names";
@@ -47,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                         DataBase.Path.RUN_COUNT + INTEGER_TYPE + COMMA_SEP +
                         DataBase.Path.SPLIT_COUNT + INTEGER_TYPE + COMMA_SEP +
                         DataBase.Path.PB + TEXT_TYPE + COMMA_SEP +
+                        DataBase.Path.BEST + TEXT_TYPE + COMMA_SEP +
                         DataBase.Path.MEAN + TEXT_TYPE + COMMA_SEP +
                         DataBase.Path.LAST + TEXT_TYPE + COMMA_SEP +
                         DataBase.Path.SPLIT_NAMES + TEXT_TYPE + COMMA_SEP +
@@ -83,19 +93,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private static int create_new_path(String title, int split_count, JSONArray split_names, JSONArray latitude, JSONArray longitude){
+        JSONArray PB = new JSONArray();
+        for(int i = 0; i < split_count;i++)
+            PB.put(1200);
+        ContentValues values = new ContentValues();
+        values.put(DataBase.Path.TITLE, title);
+        values.put(DataBase.Path.RUN_COUNT, 0);
+        values.put(DataBase.Path.SPLIT_COUNT, split_count);
+        values.put(DataBase.Path.PB, PB.toString());
+        values.put(DataBase.Path.BEST, PB.toString());
+        values.put(DataBase.Path.MEAN, PB.toString());
+        values.put(DataBase.Path.LAST, PB.toString());
+        values.put(DataBase.Path.SPLIT_NAMES, split_names.toString());
+        values.put(DataBase.Path.LONGITUDE, latitude.toString());
+        values.put(DataBase.Path.LATITUDE, longitude.toString());
+        return (int)db.insert(DataBase.Path.TABLE_NAME, null, values);
+    }
+
+    private static int create_new_run(JSONArray segment_time){
+        ContentValues values = new ContentValues();
+        values.put(DataBase.Run.PATH_ID, path_id);
+        values.put(DataBase.Run.SEGMENT, segment_time.toString());
+        return (int)db.insert(DataBase.Run.TABLE_NAME, null, values);
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        PostDbHelper mDbHelper = new PostDbHelper(getApplicationContext());
+        mDbHelper = new PostDbHelper(getApplicationContext());
 
 
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        /**
-        ContentValues values = new ContentValues();
-        values.put(PostContract.PostEntry.COLUMN_NAME_TITLE, "Titulo do Post");
-        values.put(PostContract.PostEntry.COLUMN_NAME_SUBTITLE, "Subtitulo do Post");
-        long newRowId = db.insert(PostContract.PostEntry.TABLE_NAME, null, values);*/
+        db = mDbHelper.getWritableDatabase();
+
+        int split_count = 16;
+        JSONArray splitnames = new JSONArray(), latitude =new JSONArray(), longitude =new JSONArray();
+        for(int i = 0; i < split_count;i++)
+        try {
+            splitnames.put("bla");
+            latitude.put(-3.05);
+            longitude.put(60.05);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        int error = create_new_path("SMO Any%", split_count,splitnames,latitude,longitude);
+
+
+        JSONArray segment_time = new JSONArray();
+        for(int i = 0; i < 16;i++)
+                segment_time.put(600);
+        System.out.println(create_new_run(segment_time));
     }
+
 }
