@@ -136,10 +136,6 @@ public class MainActivity extends AppCompatActivity {
         int error = create_new_path("SMO Any%", split_count,splitnames,latitude,longitude);
 
 
-        JSONArray segment_time = new JSONArray();
-        for(int i = 0; i < 16;i++)
-                segment_time.put(600);
-        System.out.println(create_new_run(segment_time));
     }
 
     private Cursor get_path_by_id(int id){
@@ -176,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
         segment_time_json = new JSONArray();
         Cursor c = get_path_by_id(path_id);
         c.moveToFirst();
-        //title.setText(c.getString(c.getColumnIndexOrThrow(DataBase.Path.TITLE)));
         run_count = c.getInt(c.getColumnIndexOrThrow(DataBase.Path.RUN_COUNT));
         split_count = c.getInt(c.getColumnIndexOrThrow(DataBase.Path.SPLIT_COUNT));
         pb_time_json = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.PB)));
@@ -186,23 +181,6 @@ public class MainActivity extends AppCompatActivity {
         split_names = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.SPLIT_NAMES)));
         latitude = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.LATITUDE)));
         longitude = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.LONGITUDE)));
-
-        System.out.println(run_count);
-        System.out.println(split_count);
-        System.out.println(pb_time_json.toString());
-        System.out.println(best_time_json.toString());
-        System.out.println(mean_time_json.toString());
-        System.out.println(last_time_json.toString());
-        System.out.println(split_names.toString());
-        System.out.println(latitude);
-        System.out.println(longitude);
-
-
-
-
-
-
-
 
     }
 
@@ -227,16 +205,18 @@ public class MainActivity extends AppCompatActivity {
 
         db = mDbHelper.getWritableDatabase();
 
-        /**try {
+        inicia_banco();
+        try {
             JSONArray updating = new JSONArray("[142,173,304,177,323,91,128,209,272,282,211,376,190,264,209,316]");
+            update_path_json(path_id, DataBase.Path.BEST,updating);
+            update_path_json(path_id, DataBase.Path.MEAN,updating);
+            update_path_json(path_id, DataBase.Path.PB,updating);
             update_path_json(path_id, DataBase.Path.LAST,updating);
             reset_splits();
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }*/
-        //inicia_banco();
-
+        }
 
     }
 
