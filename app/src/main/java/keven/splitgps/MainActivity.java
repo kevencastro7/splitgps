@@ -26,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static LinearLayout splitlayout_vertical;
     private static LinearLayout last_split;
-    private static LinearLayout[] splits = new LinearLayout[16];
-    private static TextView[] splitnames = new TextView[16];
-    private static TextView[] splitdiffs = new TextView[16];
-    private static TextView[] splittimes = new TextView[16];
+    private static LinearLayout[] splits;
+    private static TextView[] splitnames;
+    private static TextView[] splitdiffs;
+    private static TextView[] splittimes;
     private static TextView split_total, split_time, split_pb, split_besttime, split_previous,
             split_pts, split_bpt, split_sob, title;
     private static long initialTime;
@@ -40,13 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private static Button bt_split;
     private static int state = -1;
     private static long total_time;
-
-    private static long[] segment_time = new long[16];
-    private static long[] pb_time = {142, 173, 304, 177, 323, 91, 128, 209, 272, 282, 211, 376, 190,
-            264, 209, 316};
-
-    private static long[] best_time = {132, 163, 278, 167, 308, 90, 118, 183, 262, 267, 210, 366,
-            164, 254, 194, 301};
 
     public static SQLiteDatabase db;
     public static PostDbHelper mDbHelper;
@@ -201,6 +194,10 @@ public class MainActivity extends AppCompatActivity {
         split_sob = (TextView)findViewById(R.id.split_sob);
         title = (TextView)findViewById(R.id.title);
         get_from_db();
+        splits = new LinearLayout[split_count];
+        splitnames = new TextView[split_count];
+        splitdiffs = new TextView[split_count];
+        splittimes = new TextView[split_count];
     }
 
     private void get_from_db() throws JSONException {
@@ -424,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             if(state >= 0){
-                total_time = (System.currentTimeMillis() - initialTime)/100;
+                total_time = (System.currentTimeMillis() - initialTime)/MILLIS_IN_SEC;
                 long aux_time = total_time;
                 for (int i = state -1 ; i >= 0; i--) {
                     try {
@@ -457,7 +454,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                handler.postDelayed(runnable, 100);
+                handler.postDelayed(runnable, MILLIS_IN_SEC);
 
             }
         }
@@ -494,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if (state == 0) {
                     initialTime = System.currentTimeMillis();
-                    handler.postDelayed(runnable, 100);
+                    handler.postDelayed(runnable, MILLIS_IN_SEC);
                 }
                 else if (state < splits.length) {
                     try {
