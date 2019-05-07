@@ -327,9 +327,9 @@ public class MainActivity extends AppCompatActivity {
         splitdiffs[splits.length-1].setText(diff_long_to_string(total_time ,sum_until_i_json(pb_time_json, splits.length-1)));
         split_previous.setText(diff_long_to_string(segment_time_json.getLong(splits.length-1) ,segment_time_json.getLong(splits.length-1)));
 
-        if (split_count > 0) {
+        if (run_count > 0) {
             for (int i = 0; i < splits.length; i++) {
-                mean_time_json.put(i, (mean_time_json.getLong(i) * run_count + pb_time_json.getLong(i)) / (split_count + 1));
+                mean_time_json.put(i, (mean_time_json.getLong(i) * run_count + segment_time_json.getLong(i)) / (run_count + 1));
             }
             update_path_json(path_id, DataBase.Path.MEAN, mean_time_json);
         }
@@ -338,10 +338,10 @@ public class MainActivity extends AppCompatActivity {
             update_path_json(path_id, DataBase.Path.MEAN, segment_time_json);
             update_path_json(path_id, DataBase.Path.BEST, segment_time_json);
         }
-        split_count++;
-        update_path_count(path_id, DataBase.Path.SPLIT_COUNT,split_count);
+        run_count++;
+        update_path_count(path_id, DataBase.Path.RUN_COUNT,run_count);
         create_new_run(segment_time_json);
-        update_path_json(path_id, DataBase.Path.LAST, pb_time_json);
+        update_path_json(path_id, DataBase.Path.LAST, segment_time_json);
 
         if (segment_time_json.getLong(splits.length-1) < segment_time_json.getLong(splits.length-1)){
             split_previous.setTextColor(Color.rgb(255,215,0));
