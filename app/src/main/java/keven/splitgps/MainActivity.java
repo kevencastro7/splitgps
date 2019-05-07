@@ -210,6 +210,12 @@ public class MainActivity extends AppCompatActivity {
             JSONArray pb = new JSONArray("[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]");
             JSONArray best = new JSONArray("[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]");
             JSONArray name = new JSONArray("[\"Cap\",\"Cascade\",\"Sand\",\"Lake\",\"Wooded\",\"Cloud\",\"Lost\",\"Mecha Wiggler\",\"Metro\", \"Snow\", \"Seaside\", \"Luncheon\", \"Ruined\", \"Bunnies\", \"Chinatown\", \"Escape\"]");
+            JSONArray latitude = new JSONArray("[-3.006296,-3.010520,-3.008667, -3.019701,-3.025148," +
+                    "-3.037674,-3.045935,-3.053276,-3.056718,-3.059772,-3.064938,-3.069382," +
+                    "-3.077965,-3.099480,-3.113986,-3.121817,-3.128036,-3.133940,-3.139739,-3.144813,]");
+            JSONArray longitude = new JSONArray("[-59.974644,-59.970508,-59.939935,-59.937966,-59.933978" +
+                    "-59.940667,-59.943343,-59.946225,-59.947821,-59.949208,-59.951612,-59.953673," +
+                    "-59.956060,-59.947189,-59.947049,-59.953185,-59.957308,-59.987887,-59.990078,-60.001224]");
 
             update_path_json(path_id, DataBase.Path.BEST,best);
             update_path_json(path_id, DataBase.Path.MEAN,pb);
