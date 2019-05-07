@@ -164,6 +164,30 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void update_path_json(int id, String COLUMN, JSONArray Value){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN, Value.toString());
+        String selection = DataBase.Path._ID + " = ?";
+        String[] selectionArgs = { String.format("%d", id) };
+        int count = db.update(
+                DataBase.Path.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+    }
+
+    private void update_path_count(int id, String COLUMN, int Value){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN, Value);
+        String selection = DataBase.Path._ID + " = ?";
+        String[] selectionArgs = { String.format("%d", id) };
+        int count = db.update(
+                DataBase.Path.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+    }
+
     private void init_static_vars() throws JSONException {
         splitlayout_vertical =  (LinearLayout)findViewById(R.id.splitlayout);
         last_split =  (LinearLayout)findViewById(R.id.last_split);
@@ -272,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
         if (segment_time_json.getLong(state-1) < best_time_json.getLong(state-1)){
             split_previous.setTextColor(Color.rgb(255,215,0));
             best_time_json.put(state-1, segment_time_json.getLong(state-1));
+            update_path_json(path_id, DataBase.Path.BEST,best_time_json);
             splitdiffs[state-1].setTextColor(Color.rgb(255,215,0));
         }
         else if (total_time < sum_until_i_json(pb_time_json, state-1) ){
@@ -301,6 +326,14 @@ public class MainActivity extends AppCompatActivity {
         split_bpt.setText(long_to_string(sum_until_i_json(segment_time_json,splits.length-1 ) + sum_past_i_json(best_time_json,splits.length-1)));
         splitdiffs[splits.length-1].setText(diff_long_to_string(total_time ,sum_until_i_json(pb_time_json, splits.length-1)));
         split_previous.setText(diff_long_to_string(segment_time_json.getLong(splits.length-1) ,segment_time_json.getLong(splits.length-1)));
+        update_path_json(path_id, DataBase.Path.LAST,pb_time_json);
+        for (int i = 0; i < splits.length; i++){
+            mean_time_json.put(i,(mean_time_json.getLong(i)*run_count + pb_time_json.getLong(i))/(split_count+1) );
+        }
+        update_path_json(path_id, DataBase.Path.MEAN,mean_time_json);
+        split_count++;
+        update_path_count(path_id, DataBase.Path.SPLIT_COUNT,split_count);
+        create_new_run(segment_time_json);
 
         if (segment_time_json.getLong(splits.length-1) < segment_time_json.getLong(splits.length-1)){
             split_previous.setTextColor(Color.rgb(255,215,0));
@@ -330,6 +363,7 @@ public class MainActivity extends AppCompatActivity {
         if (total_time < sum_until_i_json(pb_time_json, splits.length -1)){
             for (int i = 0; i< splits.length;i++)
                 pb_time_json.put(i, segment_time_json.getLong(i));
+            update_path_json(path_id, DataBase.Path.PB,pb_time_json);
             split_total.setTextColor(Color.rgb(255, 215, 0));
         }
         else
