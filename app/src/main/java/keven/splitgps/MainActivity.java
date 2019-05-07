@@ -334,8 +334,9 @@ public class MainActivity extends AppCompatActivity {
             update_path_json(path_id, DataBase.Path.MEAN, mean_time_json);
         }
         else{
-            update_path_json(path_id, DataBase.Path.PB, mean_time_json);
-            update_path_json(path_id, DataBase.Path.PB, best_time_json);
+            update_path_json(path_id, DataBase.Path.PB, segment_time_json);
+            update_path_json(path_id, DataBase.Path.MEAN, segment_time_json);
+            update_path_json(path_id, DataBase.Path.BEST, segment_time_json);
         }
         split_count++;
         update_path_count(path_id, DataBase.Path.SPLIT_COUNT,split_count);
