@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
@@ -13,12 +14,15 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
     public static SQLiteDatabase db;
     public static PostDbHelper mDbHelper;
     public static int path_id = 1;
+    private static JSONArray pb_time_json, best_time_json, segment_time_json, mean_time_json, last_time_json, split_names, latitude, longitude;
+    public static int run_count, split_count;
 
     public static final class DataBase {
 
@@ -117,16 +121,8 @@ public class MainActivity extends AppCompatActivity {
         values.put(DataBase.Run.SEGMENT, segment_time.toString());
         return (int)db.insert(DataBase.Run.TABLE_NAME, null, values);
     }
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        mDbHelper = new PostDbHelper(getApplicationContext());
-
-
-        db = mDbHelper.getWritableDatabase();
-
+    private static void inicia_banco(){
         int split_count = 16;
         JSONArray splitnames = new JSONArray(), latitude =new JSONArray(), longitude =new JSONArray();
         for(int i = 0; i < split_count;i++)
@@ -144,6 +140,104 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < 16;i++)
                 segment_time.put(600);
         System.out.println(create_new_run(segment_time));
+    }
+
+    private Cursor get_path_by_id(int id){
+        String[] projection = {
+                DataBase.Path._ID,
+                DataBase.Path.TITLE,
+                DataBase.Path.RUN_COUNT,
+                DataBase.Path.SPLIT_COUNT,
+                DataBase.Path.PB,
+                DataBase.Path.BEST,
+                DataBase.Path.MEAN,
+                DataBase.Path.LAST,
+                DataBase.Path.SPLIT_NAMES,
+                DataBase.Path.LONGITUDE,
+                DataBase.Path.LATITUDE,
+        };
+        String selection = DataBase.Path._ID + " = ?";
+        String[] selectionArgs = { String.format("%d", id) };
+        String sortOrder =
+                DataBase.Path._ID + " DESC";
+
+        return db.query(
+                DataBase.Path.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
+
+    }
+
+    private void reset_splits() throws JSONException {
+        segment_time_json = new JSONArray();
+        Cursor c = get_path_by_id(path_id);
+        c.moveToFirst();
+        //title.setText(c.getString(c.getColumnIndexOrThrow(DataBase.Path.TITLE)));
+        run_count = c.getInt(c.getColumnIndexOrThrow(DataBase.Path.RUN_COUNT));
+        split_count = c.getInt(c.getColumnIndexOrThrow(DataBase.Path.SPLIT_COUNT));
+        pb_time_json = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.PB)));
+        best_time_json = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.BEST)));
+        mean_time_json = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.MEAN)));
+        last_time_json = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.LAST)));
+        split_names = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.SPLIT_NAMES)));
+        latitude = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.LATITUDE)));
+        longitude = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.LONGITUDE)));
+
+        System.out.println(run_count);
+        System.out.println(split_count);
+        System.out.println(pb_time_json.toString());
+        System.out.println(best_time_json.toString());
+        System.out.println(mean_time_json.toString());
+        System.out.println(last_time_json.toString());
+        System.out.println(split_names.toString());
+        System.out.println(latitude);
+        System.out.println(longitude);
+
+
+
+
+
+
+
+
+    }
+
+    private void update_path_json(int id, String COLUMN, JSONArray Value){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN, Value.toString());
+        String selection = DataBase.Path._ID + " = ?";
+        String[] selectionArgs = { String.format("%d", id) };
+        int count = db.update(
+                DataBase.Path.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mDbHelper = new PostDbHelper(getApplicationContext());
+
+
+        db = mDbHelper.getWritableDatabase();
+
+        /**try {
+            JSONArray updating = new JSONArray("[142,173,304,177,323,91,128,209,272,282,211,376,190,264,209,316]");
+            update_path_json(path_id, DataBase.Path.LAST,updating);
+            reset_splits();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }*/
+        //inicia_banco();
+
+
     }
 
 }
