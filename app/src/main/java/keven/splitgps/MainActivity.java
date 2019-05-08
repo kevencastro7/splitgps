@@ -1,14 +1,20 @@
 package keven.splitgps;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.BaseColumns;
@@ -17,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -417,6 +424,38 @@ public class MainActivity extends AppCompatActivity {
         return sum;
     }
 
+    private void pedirPermissoes() {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        else
+            configurarServico();
+    }
+
+    public void configurarServico(){
+        try {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            LocationListener locationListener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    //atualizar(location);
+                }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) { }
+
+                public void onProviderEnabled(String provider) { }
+
+                public void onProviderDisabled(String provider) { }
+            };
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }catch(SecurityException ex){
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
     private final static Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -461,6 +500,20 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    configurarServico();
+                } else {
+                    Toast.makeText(this, "Não vai funcionar!!!", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+        }
+    }
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -476,7 +529,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         bt_split = (Button) findViewById(R.id.bt_split);
         bt_split.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -511,5 +563,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         handler = new Handler();
+        pedirPermissoes();
     }
 }
