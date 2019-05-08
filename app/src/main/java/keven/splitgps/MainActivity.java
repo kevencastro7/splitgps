@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private static int create_new_path(String title, int split_count, JSONArray split_names, JSONArray latitude, JSONArray longitude){
         JSONArray PB = new JSONArray();
         for(int i = 0; i < split_count;i++)
-            PB.put(1200);
+            PB.put(0);
         ContentValues values = new ContentValues();
         values.put(DataBase.Path.TITLE, title);
         values.put(DataBase.Path.RUN_COUNT, 0);
@@ -122,18 +122,18 @@ public class MainActivity extends AppCompatActivity {
         return (int)db.insert(DataBase.Run.TABLE_NAME, null, values);
     }
 
-    private static void inicia_banco(){
-        int split_count = 16;
-        JSONArray splitnames = new JSONArray(), latitude =new JSONArray(), longitude =new JSONArray();
-        for(int i = 0; i < split_count;i++)
-        try {
-            splitnames.put("bla");
-            latitude.put(-3.05);
-            longitude.put(60.05);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        int error = create_new_path("SMO Any%", split_count,splitnames,latitude,longitude);
+    private static void inicia_banco() throws JSONException {
+        JSONArray name = new JSONArray("[\"RP001\",\"RP002\",\"RP003\",\"RP004\",\"RP005\",\"RP006\"," +
+                "\"RP007\",\"RP008\",\"RP009\",\"RP010\",\"RP011\",\"RP012\",\"RP013\",\"RP014\"," +
+                "\"RP015\",\"RP016\",\"RP017\",\"RP018\",\"RP019\",\"RP020\",\"RP021\"]");
+        JSONArray latitude = new JSONArray("[-3.006296,-3.010520,-3.010866,-3.008667,-3.019701,-3.025148," +
+                "-3.037674,-3.045935,-3.053276,-3.056718,-3.059772,-3.064938,-3.069382," +
+                "-3.077965,-3.099480,-3.113986,-3.121817,-3.128036,-3.133940,-3.139739,-3.144813]");
+        JSONArray longitude = new JSONArray("[-59.974644,-59.970508,-59.958931,-59.939935,-59.937966,-59.933978," +
+                "-59.940667,-59.943343,-59.946225,-59.947821,-59.949208,-59.951612,-59.953673," +
+                "-59.956060,-59.947189,-59.947049,-59.953185,-59.957308,-59.987887,-59.990078,-60.001224]");
+
+        int error = create_new_path("Casa para VTI", name.length(),name,latitude,longitude);
 
 
     }
@@ -182,6 +182,17 @@ public class MainActivity extends AppCompatActivity {
         latitude = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.LATITUDE)));
         longitude = new JSONArray(c.getString(c.getColumnIndexOrThrow(DataBase.Path.LONGITUDE)));
 
+        System.out.println(run_count);
+        System.out.println(split_count);
+        System.out.println(pb_time_json.toString());
+        System.out.println(best_time_json.toString());
+        System.out.println(mean_time_json.toString());
+        System.out.println(last_time_json.toString());
+        System.out.println(split_names.toString());
+        System.out.println(latitude.toString());
+        System.out.println(longitude.toString());
+
+
     }
 
     private void update_path_json(int id, String COLUMN, JSONArray Value){
@@ -205,23 +216,8 @@ public class MainActivity extends AppCompatActivity {
 
         db = mDbHelper.getWritableDatabase();
 
-        inicia_banco();
         try {
-            JSONArray pb = new JSONArray("[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]");
-            JSONArray best = new JSONArray("[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]");
-            JSONArray name = new JSONArray("[\"Cap\",\"Cascade\",\"Sand\",\"Lake\",\"Wooded\",\"Cloud\",\"Lost\",\"Mecha Wiggler\",\"Metro\", \"Snow\", \"Seaside\", \"Luncheon\", \"Ruined\", \"Bunnies\", \"Chinatown\", \"Escape\"]");
-            JSONArray latitude = new JSONArray("[-3.006296,-3.010520,-3.008667, -3.019701,-3.025148," +
-                    "-3.037674,-3.045935,-3.053276,-3.056718,-3.059772,-3.064938,-3.069382," +
-                    "-3.077965,-3.099480,-3.113986,-3.121817,-3.128036,-3.133940,-3.139739,-3.144813,]");
-            JSONArray longitude = new JSONArray("[-59.974644,-59.970508,-59.939935,-59.937966,-59.933978" +
-                    "-59.940667,-59.943343,-59.946225,-59.947821,-59.949208,-59.951612,-59.953673," +
-                    "-59.956060,-59.947189,-59.947049,-59.953185,-59.957308,-59.987887,-59.990078,-60.001224]");
-
-            update_path_json(path_id, DataBase.Path.BEST,best);
-            update_path_json(path_id, DataBase.Path.MEAN,pb);
-            update_path_json(path_id, DataBase.Path.PB,pb);
-            update_path_json(path_id, DataBase.Path.LAST,pb);
-            update_path_json(path_id, DataBase.Path.SPLIT_NAMES,name);
+            inicia_banco();
             reset_splits();
 
         } catch (JSONException e) {
