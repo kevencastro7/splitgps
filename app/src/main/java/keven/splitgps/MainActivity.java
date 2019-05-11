@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static final long MILLIS_IN_SEC = 1000L;
     private static final int SECS_IN_MIN = 60;
     private static final int MIN_HOUR = 60;
+    private static final double LIMITE = 0.00003;
     private static Button bt_split;
     private static int state = -1;
     private static long total_time;
@@ -441,7 +442,13 @@ public class MainActivity extends AppCompatActivity {
 
             LocationListener locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
-                    //atualizar(location);
+                    if(state >= 0 && state <= split_count) {
+                        try {
+                            verify_split(location);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) { }
@@ -453,6 +460,23 @@ public class MainActivity extends AppCompatActivity {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }catch(SecurityException ex){
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private boolean linear_distance(double a1, double b1, double a2, double b2){
+        return (Math.pow(Math.pow(a1-b1,2) + Math.pow(a2-b2,2),0.5) < LIMITE);
+    }
+
+    private void verify_split(Location location) throws JSONException {
+        if (linear_distance(latitude.getDouble(state),location.getLatitude(), longitude.getDouble(state), location.getLongitude())){
+            state++;
+            if (state < split_count)
+                save_splittime();
+            else{
+                state = -2;
+                end_splittime();
+            }
         }
     }
 
