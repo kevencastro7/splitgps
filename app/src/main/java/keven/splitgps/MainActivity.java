@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
         values.put(DataBase.Path.MEAN, PB.toString());
         values.put(DataBase.Path.LAST, PB.toString());
         values.put(DataBase.Path.SPLIT_NAMES, split_names.toString());
-        values.put(DataBase.Path.LONGITUDE, latitude.toString());
-        values.put(DataBase.Path.LATITUDE, longitude.toString());
+        values.put(DataBase.Path.LATITUDE, latitude.toString());
+        values.put(DataBase.Path.LONGITUDE, longitude.toString());
         return (int)db.insert(DataBase.Path.TABLE_NAME, null, values);
     }
 
