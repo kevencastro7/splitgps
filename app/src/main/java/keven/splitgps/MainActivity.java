@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             split_pts, split_bpt, split_sob, title;
     private static long initialTime;
     private static Handler handler;
-    private static final long MILLIS_IN_SEC = 1000L;
+    private static final long MILLIS_IN_SEC = 100L;
     private static final int SECS_IN_MIN = 60;
     private static final int MIN_HOUR = 60;
     private static final double LIMITE = 0.00003;
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
 
             splitnames[i] = new TextView(this);
             splitnames[i].setText(split_names.getString(i));
-            splitnames[i].setWidth(630);
+            splitnames[i].setWidth(450);
             splitnames[i].setTextSize(30);
             if (i != splits.length -1)
                 splits[i].addView(splitnames[i]);
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
 
             splitdiffs[i] = new TextView(this);
             splitdiffs[i].setText("");
-            splitdiffs[i].setWidth(200);
+            splitdiffs[i].setWidth(300);
             splitdiffs[i].setTextSize(20);
             if (i != splits.length -1)
                 splits[i].addView(splitdiffs[i]);
@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
             splittimes[i] = new TextView(this);
             splittimes[i].setText(long_to_string(sum_until_i_json(pb_time_json, i)));
-            splittimes[i].setWidth(250);
+            splittimes[i].setWidth(330);
             splittimes[i].setTextSize(20);
             splittimes[i].setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
             if (i != splits.length -1)
@@ -385,19 +385,19 @@ public class MainActivity extends AppCompatActivity {
 
     private static String long_to_string(long time){
         String string_time;
-        long hour = time / (MIN_HOUR*SECS_IN_MIN);
-        long minute = (time / MIN_HOUR) % SECS_IN_MIN;
-        long second = (time % MIN_HOUR) % SECS_IN_MIN;
+        long hour = time / 10 / (MIN_HOUR*SECS_IN_MIN);
+        long minute = (time / 10 / MIN_HOUR) % SECS_IN_MIN;
+        double second = ((time/10.0 % MIN_HOUR) % SECS_IN_MIN);
         if (minute >= 1 || hour >=1){
             if (hour >= 1){
-                string_time = String.format("%d:%02d:%02d", hour,minute,second);
+                string_time = String.format("%d:%02d:%04.1f", hour,minute,second);
             }
             else{
-                string_time = String.format("%d:%02d", minute,second);
+                string_time = String.format("%d:%04.1f", minute,second);
             }
         }
         else{
-            string_time = String.format("%d",second);
+            string_time = String.format("%.01f",second);
         }
         return string_time;
     }
